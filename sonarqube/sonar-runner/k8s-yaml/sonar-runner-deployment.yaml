@@ -1,0 +1,31 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: sonarqube-runner-${CICD_EXECUTION_SEQUENCE}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sonarqube-runner
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: sonarqube-runner
+    spec:
+      imagePullSecrets:
+      - name: pipeline-docker-registry
+      containers:
+      - name: sonarqube-runner
+        image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
+        env:
+          - name: SONAR_HOST_URL
+            value: http://35.202.12.62:9000
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "4096Mi"
+            cpu: 2
