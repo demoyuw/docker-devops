@@ -10,7 +10,6 @@ def index():
 
 @app.route("/dologin", methods=["POST"])
 def login():
-    """login"""
     name = request.form.get("name")
     password = request.form.get("password")
 

@@ -1,4 +1,4 @@
-FROM python:2.7
+FROM python:3
 LABEL version="0.1"
 WORKDIR /usr/src/app
 COPY . /usr/src/app/
