@@ -21,7 +21,7 @@ spec:
         image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
         env:
           - name: SONAR_HOST_URL
-            value: http://35.202.12.62:9000
+            value: http://10.138.0.2:9000
         resources:
           requests:
             memory: "64Mi"
