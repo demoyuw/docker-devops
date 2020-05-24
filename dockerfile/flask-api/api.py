@@ -10,17 +10,16 @@ def index():
 
 @app.route("/dologin", methods=["POST"])
 def login():
-    """登入"""
+    """login"""
     name = request.form.get("name")
     password = request.form.get("password")
 
     if not all([name, password]):
-        # 如果name或password中有一個為空或者都為空
-        return jsonify(code=1, message=u"引數不完整")
+        return jsonify(code=1, message="need parameter")
     if name == "admin" and password =="python":
-        return jsonify(code=0, message=u"OK")
+        return jsonify(code=0, message="OK")
     else:
-        return jsonify(code=2, message=u"使用者名稱或密碼錯誤")
+        return jsonify(code=2, message="user or password error")
 
 if __name__ == "__main__":
     # Get Parameter

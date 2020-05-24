@@ -4,6 +4,8 @@ services:
   web:
     container_name: nginx
     build: ./dockerfile/nginx/.
+    environment:
+      - POSTGRES_PASSWORD=devops
     volumes:
       - ./dockerfile/nginx/web:/usr/share/nginx/html
     ports:
@@ -12,6 +14,7 @@ services:
   db:
     container_name: postgresql
     image: postgres
+
     ports:
       - "5432:5432"
     volumes:
