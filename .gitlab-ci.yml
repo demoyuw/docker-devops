@@ -1,0 +1,32 @@
+stages:
+  - build
+  - run
+  - test
+
+before_script:
+  - docker image ls
+  - docker ps -a
+
+build-flask-image:
+  stage: build
+  script:
+    - docker build ./dockerfile/flask-api --tag demoyuw/flask-api:$CI_PIPELINE_ID
+
+run-flask-image:
+  stage: run
+  script:
+    - docker run -d --name flask-$CI_PIPELINE_ID demoyuw/flask-api:$CI_PIPELINE_ID
+  dependencies:
+    - build-flask-image
+
+test-flask-container:
+  stage: test
+  script:
+    - docker exec -i flask-$CI_PIPELINE_ID python test.py
+  dependencies:
+    - run-flask-image
+
+
+after_script:
+  - docker image ls
+  - docker ps -a
