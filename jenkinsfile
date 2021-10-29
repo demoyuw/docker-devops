@@ -1,9 +1,31 @@
 pipeline {
-    agent { docker { image 'python:3.5.1' } }
+    agent none
     stages {
         stage('build') {
+            agent { docker { image 'docker' } }
             steps {
-                sh 'python --version'
+                sh 'docker build dockerfile/flask-api --tag demoyuw/flask-api:jenkins-package'
+                sh 'docker image ls'
+            }
+        }
+        stage('publish') {
+            agent { docker { image 'docker' } }
+            steps {
+                sh 'docker login -u demoyuw -p a0918101553'
+                sh 'docker push demoyuw/flask-api:jenkins-package'
+            }
+        }
+        stage('deploy') {
+            agent { docker { image 'docker' } }
+            steps {
+                sh 'docker stop flask-api || true && docker rm flask-api || true'
+                sh 'docker run -itd -p 10009:10009 --name flask-api demoyuw/flask-api:jenkins-package'
+            }
+        }
+        stage('unit-test') {
+            agent { docker { image 'docker' } }
+            steps {
+                sh 'docker exec -i flask-api python test.py'
             }
         }
     }
