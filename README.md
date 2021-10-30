@@ -4,9 +4,10 @@
 
 使用Port
  
- * 80 port for GitLab
- * 8080 port for Jenkins
- * 9000 port for SonarQube 
+ * TCP 80 port for GitLab
+ * TCP 8080 port for Jenkins
+ * TCP 9000 port for SonarQube 
+ * TCP 10009 port for AP 測試 
 
 
 Windows 用戶製作自己的ssh key 並上傳到GCP可參考：https://www.techcoke.com/2017/01/google-compute-engine-putty-ssh-instances.html
