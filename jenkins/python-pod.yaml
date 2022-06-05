@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: flask
+spec:
+  containers:
+  - name: flask
+    image: demoyuw/flask-api:master
+    command: 
+      - sleep
+      - infinity

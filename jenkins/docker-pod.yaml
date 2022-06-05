@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: docker
+spec:
+  containers:
+  - name: docker
+    image: docker:dind
+    #securityContext:
+    #  privileged: true
+    volumeMounts:
+    - mountPath: /var/run/docker.sock
+      name: dockersock
+    command: 
+      - sleep
+      - infinity
+  volumes:
+  - name: dockersock
+    hostPath:
+      path: /var/run/docker.sock
