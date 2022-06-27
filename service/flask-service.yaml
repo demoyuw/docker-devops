@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: flask-service
+  labels: 
+    app: flask
+spec:
+  type: NodePort
+  selector:
+    app: flask
+  ports:
+    - name: apiport
+      protocol: TCP
+      port: 10009
+      targetPort: 10009
