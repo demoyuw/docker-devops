@@ -1,10 +1,10 @@
 # DEVOPS：Jenkins、Rancher pipeline 搭配Docker、Kubernets CI/CD實務班
 
-課程所提供VM規格為 GCP Ubunt16.04LTS VM，規格為 2 個 vCPU，8 GB 記憶體 20G disk，防火牆支援HTTP and HTTPS
+課程所提供VM規格為 GCP Ubunt20.04LTS VM，規格為 2 個 vCPU，8 GB 記憶體 40G disk
 
 使用Port
  
- * TCP 80 port for GitLab
+ * TCP 80, 443 port for GitLab
  * TCP 8080 port for Jenkins
  * TCP 9000 port for SonarQube 
  * TCP 10009 port for AP 測試 
