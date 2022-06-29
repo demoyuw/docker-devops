@@ -40,9 +40,9 @@ build-and-push-flask:
     name: docker
   script:
     - docker version
-    - docker build ./dockerfile/flask-api --tag demoyuw/flask-api:$CI_COMMIT_REF_NAME
+    - docker build ./dockerfile/flask-api --tag $REGISTRY_USERNAME/flask-api:$CI_COMMIT_REF_NAME
     - docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
-    - docker push demoyuw/flask-api:$CI_COMMIT_REF_NAME
+    - docker push $REGISTRY_USERNAME/flask-api:$CI_COMMIT_REF_NAME
   tags:
     - vm2-k8s
 apply-flask-namespace:
