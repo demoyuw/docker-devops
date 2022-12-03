@@ -34,8 +34,6 @@ pipeline {
         stage('sonarqube') {
             agent { docker { image 'docker' } }
             steps {
-                sh 'pwd'
-                sh 'ls -al'
                 sh 'docker run --rm -e SONAR_HOST_URL="http://10.138.0.25:9000" -e SONAR_SCANNER_OPTS="-Dsonar.projectKey=docker-devops" -e SONAR_LOGIN="sqa_7fbd17738257ef4224603600d5001726b61b1a0d" -v "/home/demoyuw/jenkins-data/workspace/docker-devops_master:/usr/src" sonarsource/sonar-scanner-cli'
             }
         }
