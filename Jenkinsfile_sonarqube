@@ -1,0 +1,43 @@
+pipeline {
+    agent none
+    stages {
+        stage('build') {
+            agent { docker { image 'docker' } }
+            steps {
+                sh 'docker build dockerfile/flask-api --tag demoyuw/flask-api:jenkins-package'
+                sh 'docker image ls'
+            }
+            when { branch 'master' }
+        }
+        stage('publish') {
+            agent { docker { image 'docker' } }
+            steps {
+                sh 'docker login -u demoyuw -p a0918101553'
+                sh 'docker push demoyuw/flask-api:jenkins-package'
+            }
+            when { branch 'master' }
+        }
+        stage('deploy') {
+            agent { docker { image 'docker' } }
+            steps {
+                sh 'docker stop flask-api || true && docker rm flask-api || true'
+                sh 'docker run -itd -p 10009:10009 --name flask-api demoyuw/flask-api:jenkins-package'
+            }
+            when { branch 'master' }
+        }
+        stage('unit-test') {
+            agent { docker { image 'docker' } }
+            steps {
+                sh 'docker exec -i flask-api python test.py'
+            }
+        }
+        stage('sonarqube') {
+            agent { docker { image 'docker' } }
+            steps {
+                sh 'pwd'
+                sh 'ls -al'
+                sh 'docker run --rm -e SONAR_HOST_URL="http://10.138.0.25:9000" -e SONAR_SCANNER_OPTS="-Dsonar.projectKey=docker-devops" -e SONAR_LOGIN="sqa_7fbd17738257ef4224603600d5001726b61b1a0d" -v "/home/demoyuw/jenkins-data/workspace/docker-devops_master:/usr/src" sonarsource/sonar-scanner-cli'
+            }
+        }
+    }
+}
