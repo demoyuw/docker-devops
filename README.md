@@ -5,7 +5,7 @@
 使用Port
  
  * TCP 80, 443 port for GitLab
- * TCP 8080 port for Jenkins
+ * TCP 8080, 50000 port for Jenkins
  * TCP 9000 port for SonarQube 
  * TCP 10009 port for AP 測試 
 
