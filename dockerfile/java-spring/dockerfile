@@ -1,4 +1,4 @@
-FROM gradle:jdk8 as build-stage
+FROM gradle:7.6.0-jdk8 as build-stage
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
 RUN ls -al
