@@ -1,42 +1,89 @@
 stages:
-#  - quality
+  - unittest
+  - quality
   - build
-  - run
-  - test
-
-before_script:
-  - docker image ls
-  - docker ps -a
-
-#sonarqube_scan:
-#  stage: quality
-#  script:
-#  - docker run -e SONAR_HOST_URL="http://10.138.0.2:9000" -e SONAR_LOGIN="admin" -e SONAR_PASSWORD="openstack" --rm -v "/home/demoyuw:/usr/src" sonarsource/sonar-scanner-cli ls
-
-
-build-flask-image:
+  - env
+  - deploy
+variables:
+  FLASKNAME: flask-$CI_COMMIT_REF_NAME
+unit-test:
+  stage: unittest
+  image:
+    name: python:3
+  script:
+    - pip install --no-cache-dir -r dockerfile/flask-api/requirements.txt
+    - python dockerfile/flask-api/test.py
+  tags:
+    - vm2-k8s
+sonarqube-check:
+  stage: quality
+  image: 
+    name: sonarsource/sonar-scanner-cli:latest
+    entrypoint: [""]
+  variables:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script: 
+    - sonar-scanner
+  allow_failure: true
+  only:
+    - master # or the name of your main branch
+  tags:
+    - vm2-k8s
+build-and-push-flask:
   stage: build
+  image:
+    name: docker
   script:
-    - docker build ./dockerfile/flask-api --tag demoyuw/flask-api:$CI_COMMIT_REF_NAME
-    - docker login -u demoyuw -p a0918101553
-    - docker push demoyuw/flask-api:$CI_COMMIT_REF_NAME
-
-run-flask-image:
-  stage: run
+    - docker version
+    - docker build ./dockerfile/flask-api --tag $REGISTRY_USERNAME/flask-api:$CI_COMMIT_REF_NAME
+    - docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
+    - docker push $REGISTRY_USERNAME/flask-api:$CI_COMMIT_REF_NAME
+  tags:
+    - vm2-k8s
+apply-flask-namespace:
+  stage: env
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
   script:
-    - docker rm -f flask-$CI_COMMIT_REF_NAME
-    - docker run -d -P --name flask-$CI_COMMIT_REF_NAME demoyuw/flask-api:$CI_COMMIT_REF_NAME
-  dependencies:
-    - build-flask-image
-
-test-flask-container:
-  stage: test
+    - mkdir .kube
+    - echo $kubeconfig | base64 -d > ~/.kube/config
+    - kubectl config get-contexts
+    - sed -i "s/flask/$FLASKNAME/g" namespace/flask-ns.yaml
+    - cat namespace/flask-ns.yaml
+    - kubectl apply -f namespace/flask-ns.yaml
+  tags:
+    - vm2-k8s
+apply-flask-deployment:
+  stage: deploy
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
   script:
-    - docker exec -i flask-$CI_COMMIT_REF_NAME python test.py
-  dependencies:
-    - run-flask-image
-
-
-after_script:
-  - docker image ls
-  - docker ps -a
+    - mkdir .kube
+    - echo $kubeconfig | base64 -d > ~/.kube/config
+    - kubectl config get-contexts
+    - sed -i "s/master/$CI_COMMIT_REF_NAME/g" deployment/flask-api/flask-api-deploy.yaml
+    - cat deployment/flask-api/flask-api-deploy.yaml
+    - kubectl apply -f deployment/flask-api/flask-api-deploy.yaml -n $FLASKNAME
+  tags:
+    - vm2-k8s
+apply-flask-service:
+  stage: deploy
+  image:
+    name: bitnami/kubectl:latest
+    entrypoint: ['']
+  script:
+    - mkdir .kube
+    - echo $kubeconfig | base64 -d > ~/.kube/config
+    - kubectl config get-contexts
+    - cat service/flask-service.yaml
+    - kubectl apply -f service/flask-service.yaml -n $FLASKNAME
+    - kubectl get service -n $FLASKNAME
+  tags:
+    - vm2-k8s
