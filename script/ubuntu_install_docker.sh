@@ -1,17 +1,15 @@
 #!/bin/bash
 
-WORK_DIR=/home/demoyuw
-LOGFILE=$WORK_DIR/log/docker_install.log
-mkdir -p $WORK_DIR/log
-touch $LOGFILE
-
-apt-get update -y &>> $LOGFILE
-apt-get install     apt-transport-https     ca-certificates     curl     software-properties-common -y &>> $LOGFILE
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add - &>> $LOGFILE
-add-apt-repository    "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable" &>> $LOGFILE
-apt-get update -y &>> $LOGFILE 
-apt-get install docker-ce docker-ce-cli containerd.io -y &>> $LOGFILE
-usermod -aG docker demoyuw &>> $LOGFILE
-su - demoyuw
+apt-get update
+apt-get install ca-certificates curl
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+  $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+apt-get update
+apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+usermod -aG docker `logname`
+newgrp docker
