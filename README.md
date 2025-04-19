@@ -1,6 +1,6 @@
 # DevOps：GitlabCI/CD 搭配 Docker, Kubernetes 持續整合實務班
 
-課程所提供VM規格為 GCP Ubunt20.04LTS VM，規格為 2 個 vCPU，8 GB 記憶體 40G disk
+課程所提供VM規格為 GCP Ubunt24.04LTS VM，規格為 2 個 vCPU，8 GB 記憶體 40G disk
 
 使用Port
  
