@@ -44,7 +44,7 @@ build-and-push-flask:
     - docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD
     - docker push $REGISTRY_USERNAME/flask-api:$CI_COMMIT_REF_NAME
   tags:
-    - vm2-k8s
+    - docker
 apply-flask-namespace:
   stage: env
   image:
