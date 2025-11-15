@@ -562,7 +562,7 @@ runners:
 securityContext:
   runAsUser: 100
   # runAsGroup: 65533
-  #fsGroup: 65533
+  # fsGroup: 65533
   # supplementalGroups: [65533]
 
   ## Note: values for the ubuntu image:
