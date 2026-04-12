@@ -51,12 +51,10 @@ apply-flask-namespace:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   script:
-    - mkdir .kube
+    - mkdir -p ~/.kube
     - echo $kubeconfig | base64 -d > ~/.kube/config
     - kubectl config get-contexts
-    - sed -i "s/flask/$FLASKNAME/g" namespace/flask-ns.yaml
-    - cat namespace/flask-ns.yaml
-    - kubectl apply -f namespace/flask-ns.yaml
+    - kubectl create namespace $FLASKNAME --dry-run=client -o yaml | kubectl apply -f -
   tags:
     - vm2-k8s
 apply-flask-deployment:
@@ -65,12 +63,22 @@ apply-flask-deployment:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   script:
-    - mkdir .kube
+    - mkdir -p ~/.kube
     - echo $kubeconfig | base64 -d > ~/.kube/config
     - kubectl config get-contexts
-    - sed -i "s/master/$CI_COMMIT_REF_NAME/g" deployment/flask-api/flask-api-deploy.yaml
-    - cat deployment/flask-api/flask-api-deploy.yaml
-    - kubectl apply -f deployment/flask-api/flask-api-deploy.yaml -n $FLASKNAME
+    - cd deployment/flask-api
+    - |
+      cat <<EOF > kustomization.yaml
+      apiVersion: kustomize.config.k8s.io/v1beta1
+      kind: Kustomization
+      resources:
+        - flask-api-deploy.yaml
+      images:
+        - name: demoyuw/flask-api
+          newName: ${REGISTRY_USERNAME}/flask-api
+          newTag: ${CI_COMMIT_REF_NAME}
+      EOF
+    - kubectl apply -k . -n $FLASKNAME
   tags:
     - vm2-k8s
 apply-flask-service:
@@ -79,7 +87,7 @@ apply-flask-service:
     name: bitnami/kubectl:latest
     entrypoint: ['']
   script:
-    - mkdir .kube
+    - mkdir -p ~/.kube
     - echo $kubeconfig | base64 -d > ~/.kube/config
     - kubectl config get-contexts
     - cat service/flask-service.yaml

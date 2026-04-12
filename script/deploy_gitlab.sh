@@ -18,7 +18,7 @@ echo "掛載資料夾將建立在: $WORK_DIR/gitlab"
 # 執行 Docker 部署指令
 sudo docker run -e GITLAB_OMNIBUS_CONFIG="external_url 'http://$VM_IP'; \
 prometheus_monitoring['enable'] = false; \
-gitlab_kas['enable'] = true;"
+gitlab_kas['enable'] = true;" \
 -d -p 443:443 -p 80:80 -p 10022:22 \
 --name gitlab \
 --restart always \
