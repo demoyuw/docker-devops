@@ -2,7 +2,10 @@
 
 課程所提供
 VM1規格為 GCP Ubunt24.04LTS VM，規格為 2 個 vCPU，16 GB 記憶體 40G disk
-VM1規格為 GCP Ubunt24.04LTS VM，規格為 2 個 vCPU，8 GB 記憶體 40G disk
+VM2規格為 GCP Ubunt24.04LTS VM，規格為 2 個 vCPU，8 GB 記憶體 40G disk
+
+虛擬機資源：
+https://reurl.cc/ln5QNQ
 
 使用Port
  
