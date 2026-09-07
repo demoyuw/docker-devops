@@ -22,6 +22,7 @@ WORKDIR /app
 COPY --from=build /app/publish .
 
 # .NET 8/9/10 預設使用 non-root 使用者 (app, UID 1654)
+RUN echo $APP_UID
 USER $APP_UID
 
 # 預設監聽 Port 8080
